@@ -1,0 +1,11 @@
+use test;
+set @er=6366.564864;
+set @lat=56.14262;
+set @lng=32.605853;
+set @dist=20;
+#1.
+SELECT id,lat,lng,@er*2*ASIN(SQRT(POWER(SIN((@lat - lat)*pi()/180 / 2), 2) +  COS(@lat * pi()/180) * COS(lat * pi()/180) *  POWER(SIN((@lng - lng) * pi()/180 / 2), 2) )) as dist FROM `unindex1` HAVING dist < @dist ORDER BY dist; 
+#
+
+#2.
+#SELECT id,lat,lng,@er*2*ASIN(SQRT(POWER(SIN((@lat - lat)*pi()/180 / 2), 2) +  COS(@lat * pi()/180) * COS(lat * pi()/180) *  #POWER(SIN((@lng - lng) * pi()/180 / 2), 2) )) as dist FROM `index1` HAVING dist < @dist ORDER BY dist;

@@ -1,0 +1,22 @@
+传统数据库索引
+存储用户登入字段主要包括 userId，lat，lng。分别代表用户 ID、最近一次 check-in 的经度、纬度。
+lat/lng 建立复合索引。
+
+然后通过手机的定位，得到自己的位置，比如记为 myLat，myLng。
+代码如下，先做一个计算，算出 1km 所对应的经纬度范围：
+double range = 180 / Math.PI * 1 / 6372.797; //里面的 1 就代表搜索 1km 之内，单位km
+double lngR = range / Math.cos(myLat * Math.PI / 180.0);
+double maxLat = myLat + range;
+double minLat = myLat - range;
+double maxLng = myLng + lngR;
+double minLng = myLng - lngR;
+
+然后执行 SQL ：
+SELECT xxxx FROM checkinTable WHERE ((lat BETWEEN ? AND ?) AND (lng BETWEEN ? AND ?)) LIMIT 100
+这四个问号，分别代入变量
+minLat、maxLat、minLng、maxLng
+
+然后就可以查询得到结果
+但是，这样得到的结果不是有序的。
+如果要排序，在程序代码（比如 app 客户端）执行。
+不建议在 SQL 层上执行，因为上述的那个 SQL 是可以用到索引进行查询的，一旦引入排序后，索引就无法发挥作用，从而会影响效率。
